@@ -8,9 +8,9 @@
  * The purpose of this class is to generate a map of points based on a L-system (Lindenmayer system).
  * @class
  */
-class LsysPointsGen {
+class LsPointsGenerator {
     /**
-     * Creates an instance of LsysPointsGen.
+     * Creates an instance of LsPointsGenerator.
      * @param  {configuration} configuration Contains initial settings 
      * @memberof ScrollingCamera
      */
@@ -212,7 +212,7 @@ class LsysPointsGen {
 
 }
 
-module.exports = LsysPointsGen;
+module.exports = LsPointsGenerator;
 
 // ************************ TYPE DEFINITIONS *************************************
 // *******************************************************************************
