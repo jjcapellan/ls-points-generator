@@ -194,7 +194,7 @@ class LsPointsGenerator {
                 minX += isXneg ? Math.abs(minX) : 0;
                 minY += isYneg ? Math.abs(minY) : 0;
 
-                return { map: pointsMap, width: pointsObject.width, height: pointsObject.height, minX: minX, minY: minY };
+                return { map: pointsMap, width: pointsObject.width, height: pointsObject.height};
             },
             angleToRadians: (angle) => {
                 const RADS_PER_DEGREE = Math.PI / 180;
@@ -234,8 +234,6 @@ module.exports = LsPointsGenerator;
  * @property  {Map<point>} map Map of points
  * @property  {number} width
  * @property  {number} height
- * @property  {number} minX Minimum value of x
- * @property  {number} minY Minimum value of y
  */
 
 /**
