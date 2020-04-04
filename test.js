@@ -64,7 +64,14 @@ function testtoPositive(){
     test(name, expected, result);
 }
 
+function testprint(){
+    let lsys = new Lsys({length: 2, angle: 90, iterations: 1 }); // T sharp
+    let pointsObject = lsys.makePoints('X', 'F[-X][+X]');
+    lsys.print(pointsObject, 4, 6);
+}
 
+
+testprint(); // visual testing
 testmakeString();
 testmakePoints();
 testtoPositive();

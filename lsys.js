@@ -84,6 +84,23 @@ class LsysPointsGen {
         return this.helpers.toPositive(pointsObject);
     }
 
+    print(pointsObject, rows, cols) {
+        let board = new Array(rows).fill(0).map(() => new Array(cols).fill(0));
+        let map = pointsObject.map;
+        map.forEach((v, k) => {
+            board[rows - 1 - v.y][v.x] = 1;
+        });
+        console.log('-'.repeat(cols));
+        board.forEach((rowArray, row) => {
+            let str = '';
+            rowArray.forEach((element, col) => {
+                str += element ? 'X' : ' ';
+            });
+            console.log(str);
+        });
+        console.log('-'.repeat(cols));
+    }
+
     initHelpers() {
         this.helpers = {
             // makePoints()
