@@ -65,9 +65,22 @@ function testtoPositive(){
 }
 
 function testprint(){
-    let lsys = new Lsys({length: 2, angle: 90, iterations: 1 }); // T sharp
+    let lsys = new Lsys({length: [2,4], angle: 90, iterations: 1 }); // T sharp
     let pointsObject = lsys.makePoints('X', 'F[-X][+X]');
-    lsys.print(pointsObject, 4, 6);
+    lsys.print(pointsObject, 10, 10);
+}
+
+function testgetDistance(){
+    let name = 'getDistance';
+    let lsys = new Lsys();
+    let expected = true;
+    let res = lsys.helpers.getDistance([10,20],true);
+    let result = (res >= 10 && res <= 20);
+    test(name, expected, result);
+
+    expected = 20;
+    result = lsys.helpers.getDistance(20, false);
+    test(name, expected, result);
 }
 
 
@@ -75,6 +88,7 @@ testprint(); // visual testing
 testmakeString();
 testmakePoints();
 testtoPositive();
+testgetDistance();
 
 console.log(`Passed ${passed} of ${tested}`);
 

@@ -32,6 +32,8 @@ class LsysPointsGen {
         let state = this.helpers.initState(VERTICAL);
         let config = this.config;
         let length = config.length;
+        let israngeLength = Array.isArray(length);
+        let distance = 0;
         let pointsMap = this.helpers.initPointsMap(VERTICAL);
         let bounds = { minX: 0, maxX: 0, minY: 0, maxY: 0 };
         let str = this.helpers.makeString(axiom, rules, config.iterations);
@@ -39,7 +41,8 @@ class LsysPointsGen {
         str.split('').forEach(v => {
             switch (v) {
                 case 'F':
-                    this.helpers.move(state, length);
+                    distance = this.helpers.getDistance(length, israngeLength);
+                    this.helpers.move(state, distance);
                     this.helpers.savePoint(state, pointsMap);
                     this.helpers.updateBounds(state.current, bounds);
                     break;
@@ -55,17 +58,16 @@ class LsysPointsGen {
                 case '[':
                     state.level++;
                     this.helpers.saveCurrent(state);
-                    length *= config.branchFactor;
                     break;
 
                 case ']':
                     state.level--;
                     this.helpers.restoreCurrent(state);
-                    length /= config.branchFactor;
                     break;
 
                 case 'X':              // TODO: implement ends of branch
-                    this.helpers.move(state, length);
+                    distance = this.helpers.getDistance(length, israngeLength);
+                    this.helpers.move(state, distance);
                     this.helpers.savePoint(state, pointsMap);
                     this.helpers.updateBounds(state.current, bounds);
                     break;
@@ -103,12 +105,9 @@ class LsysPointsGen {
 
     initHelpers() {
         this.helpers = {
-            // makePoints()
             initState: (initialAngle) => {
                 let state = {};
-                // Object storing actual state
                 state.current = { x: 0, y: 0, angle: initialAngle, level: 0, index: 0 };
-                // Stack used to save and restore states
                 state.stack = [{ x: 0, y: 0, angle: initialAngle, level: 0, index: 0 }];
                 state.level = 0;
                 state.index = 0;
@@ -148,6 +147,15 @@ class LsysPointsGen {
 
                 state.index++;
                 state.current.index = state.index;
+            },
+            getDistance: (length, isRange) => {
+                let distance = 0;
+                if (isRange) {
+                    distance = Math.round(Math.random() * (length[1] - length[0]) + length[0]);
+                } else {
+                    distance = length;
+                }
+                return distance;
             },
             getParent: (state) => {
                 return state.stack[state.stack.length - 1].index;
@@ -220,7 +228,8 @@ module.exports = LsysPointsGen;
 /**
  * Contains initial configuration settings
  * @typedef  {object} configuration
- * @property  {number} [length = 30] Distance to cover in each movement (F or X symbols)
+ * @property  {number | [min, max]} [length = 30] Distance to cover in each movement (F or X symbols).\n
+ * It can be a number or an array representing a range of values (\[min, max\])
  * @property  {number} [angle = 15] Amount of degrees to turn in each '+' or '-' symbol
  * @property  {number} [iterations = 2] Number of iterations
  * @property  {number} [branchFactor = 1] Modify branch length based on deep level. (0-1)
