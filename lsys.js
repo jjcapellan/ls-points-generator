@@ -16,13 +16,13 @@ class LsysPointsGen {
      */
     constructor({ length = 30, angle = 15, iterations = 2, branchFactor = 1 } = {}) {
 
-        this.config = {};
-        this.config.length = length;
-        this.config.angle = angle * Math.PI / 180;
-        this.config.iterations = iterations;
-        this.config.branchFactor = branchFactor;
         this.initHelpers();
 
+        this.config = {};
+        this.config.length = length;
+        this.config.angle = this.helpers.angleToRadians(angle);
+        this.config.iterations = iterations;
+        this.config.branchFactor = branchFactor; 
     }
 
     makePoints(axiom, rules) {
@@ -31,9 +31,10 @@ class LsysPointsGen {
         let pointsObject = {};
         let state = this.helpers.initState(VERTICAL);
         let config = this.config;
-        let length = config.length;
-        let israngeLength = Array.isArray(length);
+        let israngeLength = Array.isArray(config.length);
         let distance = 0;
+        let israngeAngle = Array.isArray(config.angle);
+        let turnInRadians = 0;
         let pointsMap = this.helpers.initPointsMap(VERTICAL);
         let bounds = { minX: 0, maxX: 0, minY: 0, maxY: 0 };
         let str = this.helpers.makeString(axiom, rules, config.iterations);
@@ -41,18 +42,20 @@ class LsysPointsGen {
         str.split('').forEach(v => {
             switch (v) {
                 case 'F':
-                    distance = this.helpers.getDistance(length, israngeLength);
+                    distance = this.helpers.getValueFromRange(config.length, israngeLength);
                     this.helpers.move(state, distance);
                     this.helpers.savePoint(state, pointsMap);
                     this.helpers.updateBounds(state.current, bounds);
                     break;
 
                 case '+':
-                    state.current.angle += config.angle;
+                    turnInRadians = this.helpers.getValueFromRange(config.angle, israngeAngle);
+                    state.current.angle += turnInRadians;
                     break;
 
                 case '-':
-                    state.current.angle -= config.angle;
+                    turnInRadians = this.helpers.getValueFromRange(config.angle, israngeAngle);
+                    state.current.angle -= turnInRadians;
                     break;
 
                 case '[':
@@ -66,7 +69,7 @@ class LsysPointsGen {
                     break;
 
                 case 'X':              // TODO: implement ends of branch
-                    distance = this.helpers.getDistance(length, israngeLength);
+                    distance = this.helpers.getValueFromRange(config.length, israngeLength);
                     this.helpers.move(state, distance);
                     this.helpers.savePoint(state, pointsMap);
                     this.helpers.updateBounds(state.current, bounds);
@@ -148,14 +151,14 @@ class LsysPointsGen {
                 state.index++;
                 state.current.index = state.index;
             },
-            getDistance: (length, isRange) => {
-                let distance = 0;
-                if (isRange) {
-                    distance = Math.round(Math.random() * (length[1] - length[0]) + length[0]);
+            getValueFromRange: (value, isArray) => {
+                let num = 0;
+                if (isArray) {
+                    num = Math.round(Math.random() * (value[1] - value[0]) + value[0]);
                 } else {
-                    distance = length;
+                    num = value;
                 }
-                return distance;
+                return num;
             },
             getParent: (state) => {
                 return state.stack[state.stack.length - 1].index;
@@ -192,6 +195,16 @@ class LsysPointsGen {
                 minY += isYneg ? Math.abs(minY) : 0;
 
                 return { map: pointsMap, width: pointsObject.width, height: pointsObject.height, minX: minX, minY: minY };
+            },
+            angleToRadians: (angle) => {
+                const RADS_PER_DEGREE = Math.PI / 180;
+                if(Array.isArray(angle)){                    
+                    angle[0] = angle[0] * RADS_PER_DEGREE;
+                    angle[1] = angle[1] * RADS_PER_DEGREE;
+                } else {
+                    angle = angle * RADS_PER_DEGREE;
+                }
+                return angle;
             }
 
         }
@@ -228,9 +241,10 @@ module.exports = LsysPointsGen;
 /**
  * Contains initial configuration settings
  * @typedef  {object} configuration
- * @property  {number | [min, max]} [length = 30] Distance to cover in each movement (F or X symbols).\n
- * It can be a number or an array representing a range of values (\[min, max\])
- * @property  {number} [angle = 15] Amount of degrees to turn in each '+' or '-' symbol
+ * @property  {(number | number[])} [length = 30] Distance to cover in each movement (F or X symbols).\n
+ * It can be a number or an array representing a range of values ([min, max])
+ * @property  {(number | number[])} [angle = 15] Amount of degrees to turn in each '+' or '-' symbol. \n
+ * It can be a number or an array representing a range of values ([min, max])
  * @property  {number} [iterations = 2] Number of iterations
  * @property  {number} [branchFactor = 1] Modify branch length based on deep level. (0-1)
  */
