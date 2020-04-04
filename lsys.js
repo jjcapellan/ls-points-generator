@@ -5,11 +5,7 @@
 
 
 /**
- * The purpose of this class is to produce 2D point maps in a format that can be used by 
- * other programs to generate various procedural elements such as images, game levels, 
- * object placement, etc ....
- * This class implements in a limited way the Lindenmayer system, commonly used to 
- * describe the growth of different organisms.
+ * The purpose of this class is to generate a map of points based on a L-system (Lindenmayer system).
  * @class
  */
 class LsysPointsGen {
@@ -26,6 +22,7 @@ class LsysPointsGen {
         this.config.iterations = iterations;
         this.config.branchFactor = branchFactor;
         this.config.axiom = axiom;
+        this.initHelpers();
         // Map of rules. (key = X | F, value = expression)
         this.config.rules = this.makeRulesMap(Array.isArray(rules) ? rules : [rules]);
 
@@ -38,7 +35,7 @@ class LsysPointsGen {
          * @type  {pointsObject}
          * @public
          */
-        this.points = this.parseString(this.string);
+        this.points = this.makePoints(this.string);
 
     }
 
@@ -54,52 +51,30 @@ class LsysPointsGen {
 
     makeString(axiom, rulesMap, n) {
         let str = axiom;
-        let regex = makeRulesRegex(rulesMap);
+        let regex = this.helpers.makeRulesRegex(rulesMap);
         for (let i = 0; i < n; i++) {
-            str = str.replace(regex, applyRules);
+            str = str.replace(regex, (match) => { return rulesMap.get(match); });
         }
         return str;
-
-        //// HELPER FUNCTIONS ////
-
-        function makeRulesRegex(rulesMap) {
-            let strRegex = '';
-            rulesMap.forEach((v, k) => {
-                strRegex += k + '|';
-            });
-            strRegex = strRegex[strRegex.length - 1] == '|' ? strRegex.slice(0, -1) : strRegex;
-            return new RegExp(strRegex, 'g');
-        }
-
-        function applyRules(match) {
-            return rulesMap.get(match);
-        }
-        //// END HELPER FUNCTIONS ////
-
-    } // end makeString() 
+    }
 
 
-    parseString(str) {
+    makePoints(str) {
         const VERTICAL = Math.PI / 2;
 
-        let pointsObject = {}; // { pointsMap:map, width:number, height:number}
-        let state = initState();
+        let pointsObject = {};
+        let state = this.helpers.initState(VERTICAL);
         let config = this.config;
         let length = config.length;
-        let pointsMap = initPointsMap();
+        let pointsMap = this.helpers.initPointsMap(VERTICAL);
+        let bounds = { minX: 0, maxX: 0, minY: 0, maxY: 0 };
 
-        let minX = 0;
-        let minY = 0;
-        let maxX = 0;
-        let maxY = 0;
-
-        for (let i = 0; i < str.length; i++) {
-            let token = str[i];
-            switch (token) {
+        str.split('').forEach( v => {
+            switch (v) {
                 case 'F':
-                    move();
-                    savePoint();
-                    checkPosition();
+                    this.helpers.move(state, length);
+                    this.helpers.savePoint(state, pointsMap);
+                    this.helpers.updateBounds(state.current, bounds);
                     break;
 
                 case '+':
@@ -111,116 +86,36 @@ class LsysPointsGen {
                     break;
 
                 case '[':
-                    saveCurrent();
+                    state.level++;
+                    this.helpers.saveCurrent(state);
                     length *= config.branchFactor;
                     break;
 
                 case ']':
-                    restoreCurrent();
+                    state.level--;
+                    this.helpers.restoreCurrent(state);
                     length /= config.branchFactor;
                     break;
 
                 case 'X':              // TODO: implement ends of branch
-                    move();
-                    savePoint();
-                    checkPosition();
+                    this.helpers.move(state, length);
+                    this.helpers.savePoint(state, pointsMap);
+                    this.helpers.updateBounds(state.current, bounds);
                     break;
 
                 default:
                     break;
             } // end switch
-
-        }
-
-        //// HELPER FUNCTIONS ////
-        function initState(initialAngle) {
-            let _state = {};
-            // Object storing actual state
-            _state.current = { x: 0, y: 0, angle: VERTICAL, level: 0, index: 0 };
-            // Stack used to save and restore states
-            _state.stack = [{ x: 0, y: 0, angle: VERTICAL, level: 0, index: 0 }];
-            // Represents the branch deep
-            _state.level = 0;
-            // Current index. One unique index for each point.
-            _state.index = 0;
-            return _state;
-        }
-
-        function initPointsMap() {
-            let _pointsMap = new Map();
-            _pointsMap.set(0, { x: 0, y: 0, angle: VERTICAL, level: 0, parent: -1, index: 0 });
-            return _pointsMap;
-        }
-
-        function copyCurrent() {
-            return Object.assign({}, state.current);
-        }
-
-        function checkPosition() {
-            if (state.current.x < minX) minX = state.current.x;
-            if (state.current.x > maxX) maxX = state.current.x;
-            if (state.current.y < minY) minY = state.current.y;
-            if (state.current.y > maxY) maxY = state.current.y;
-        }
-
-        function move() {
-            let x = state.current.x;
-            let y = state.current.y;
-            let angle = state.current.angle;
-
-            let x1 = Math.round(x + length * Math.cos(angle));
-            let y1 = Math.round(y + length * Math.sin(angle));
-
-            state.current.x = x1;
-            state.current.y = y1;
-
-            state.index++;
-            state.current.index = state.index;
-        }
-
-        function savePoint() {
-            let parentIndex = getParent();
-            let point = copyCurrent();
-            point.parent = parentIndex;
-            pointsMap.set(state.index, point);
-        }
-
-        function getParent() {
-            return state.stack[state.stack.length - 1].index;
-        }
-
-        function getWidth() {
-            return maxX - minX;
-        }
-
-        function getHeight() {
-            return maxY - minY;
-        }
-
-        function saveCurrent() {
-            state.level++;
-            state.current.level = state.level;
-            let newState = copyCurrent();
-            state.stack.push(newState);
-        }
-
-        function restoreCurrent() {
-            state.level--;
-            state.current = state.stack.pop();
-        }
-
-        //// END HELPER FUNCTIONS ////
+        });
 
         pointsObject.map = pointsMap;
-        pointsObject.width = getWidth();
-        pointsObject.height = getHeight();
-        pointsObject.minX = minX;
-        pointsObject.minY = minY;
+        pointsObject.width = bounds.maxX - bounds.minX;
+        pointsObject.height = bounds.maxY - bounds.minY;
+        pointsObject.minX = bounds.minX;
+        pointsObject.minY = bounds.minY;
 
         return pointsObject;
-
-        //console.log(this.points);
-    } // end parseString
+    }
 
 
     /**
@@ -248,6 +143,77 @@ class LsysPointsGen {
 
         return { map: pointsMap, width: points.width, height: points.height, minX: minX, minY: minY };
     }
+
+    initHelpers() {
+        this.helpers = {
+            // makeString()
+            makeRulesRegex: (rulesMap) => {
+                let strRegex = '';
+                rulesMap.forEach((v, k) => {
+                    strRegex += k + '|';
+                });
+                strRegex = strRegex[strRegex.length - 1] == '|' ? strRegex.slice(0, -1) : strRegex;
+                return new RegExp(strRegex, 'g');
+            },
+            // makePoints()
+            initState: (initialAngle) => {
+                let state = {};
+                // Object storing actual state
+                state.current = { x: 0, y: 0, angle: initialAngle, level: 0, index: 0 };
+                // Stack used to save and restore states
+                state.stack = [{ x: 0, y: 0, angle: initialAngle, level: 0, index: 0 }];
+                state.level = 0;
+                state.index = 0;
+                return state;
+            },
+            initPointsMap: (initialAngle) => {
+                let pointsMap = new Map();
+                pointsMap.set(0, { x: 0, y: 0, angle: initialAngle, level: 0, parent: -1, index: 0 });
+                return pointsMap;
+            },
+            copyObject: (obj) => {
+                return Object.assign({}, obj);
+            },
+            updateBounds: (current, bounds) => {
+                if (current.x < bounds.minX) bounds.minX = current.x;
+                if (current.x > bounds.maxX) bounds.maxX = current.x;
+                if (current.y < bounds.minY) bounds.minY = current.y;
+                if (current.y > bounds.maxY) bounds.maxY = current.y;
+            },
+            move: (state, distance) => {
+                let x = state.current.x;
+                let y = state.current.y;
+                let angle = state.current.angle;
+
+                let x1 = Math.round(x + distance * Math.cos(angle));
+                let y1 = Math.round(y + distance * Math.sin(angle));
+
+                state.current.x = x1;
+                state.current.y = y1;
+
+                state.index++;
+                state.current.index = state.index;
+            },
+            getParent: (state) => {
+                return state.stack[state.stack.length - 1].index;
+            },
+            savePoint: function (state, pointsMap) {
+                let parentIndex = this.getParent(state);
+                let point = this.copyObject(state.current);
+                point.parent = parentIndex;
+                pointsMap.set(state.index, point);
+            },
+            saveCurrent: function (state) {                
+                state.current.level = state.level;
+                let newState = this.copyObject(state.current);
+                state.stack.push(newState);
+            },
+            restoreCurrent: (state) => {
+                state.current = state.stack.pop();
+            }
+
+        }
+    }// end initHelpers
 
 }
 

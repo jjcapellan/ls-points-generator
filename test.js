@@ -45,12 +45,12 @@ function testmakeString() {
     test(name, expected, result);
 }
 
-function testparseString() {
-    let name = 'parseString';
+function testmakePoints() {
+    let name = 'makePoints';
     let lsys = new Lsys({ length: 10, angle: 90, iterations: 1 });
     let string = 'F[-X][+X]'; // T sharp
     let expected = '0:0,0 1:0,10 2:10,10 3:-10,10 width:20 height:10'; // format --> index : x , y ... width: number, height: number
-    let res = lsys.parseString(string); // {map,width,height}
+    let res = lsys.makePoints(string); // {map,width,height}
     let p0 = res.map.get(0), p1 = res.map.get(1), p2 = res.map.get(2), p3 = res.map.get(3), width=res.width, height=res.height;
     let result = `0:${p0['x']},${p0['y']} 1:${p1['x']},${p1['y']} ` +
         `2:${p2['x']},${p2['y']} 3:${p3['x']},${p3['y']} width:${width} height:${height}`;
@@ -69,7 +69,7 @@ function testtoPositive(){
 
 testmakeRulesMap();
 testmakeString();
-testparseString();
+testmakePoints();
 testtoPositive();
 
 console.log(`Passed ${passed} of ${tested}`);
