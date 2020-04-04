@@ -14,52 +14,18 @@ class LsysPointsGen {
      * @param  {configuration} configuration Contains initial settings 
      * @memberof ScrollingCamera
      */
-    constructor({ axiom = 'X', rules = 'X=F[-X][+X]', length = 30, angle = 15, iterations = 2, branchFactor = 1 } = {}) {
+    constructor({ length = 30, angle = 15, iterations = 2, branchFactor = 1 } = {}) {
 
         this.config = {};
         this.config.length = length;
         this.config.angle = angle * Math.PI / 180;
         this.config.iterations = iterations;
         this.config.branchFactor = branchFactor;
-        this.config.axiom = axiom;
         this.initHelpers();
-        // Map of rules. (key = X | F, value = expression)
-        this.config.rules = this.makeRulesMap(Array.isArray(rules) ? rules : [rules]);
-
-        // This string describes the lsystem
-        this.string = this.makeString(axiom, this.config.rules, iterations);
-
-
-        /**
-         * Object containing the points map and other info to render 
-         * @type  {pointsObject}
-         * @public
-         */
-        this.points = this.makePoints(this.string);
 
     }
 
-    makeRulesMap(rulesArray) {
-        let rulesMap = new Map();
-        for (let i = 0; i < rulesArray.length; i++) {
-            rulesArray[i] = rulesArray[i].replace(/\s/g, '');
-            let rule = rulesArray[i].split('=');
-            rulesMap.set(rule[0], rule[1]);
-        }
-        return rulesMap;
-    }
-
-    makeString(axiom, rulesMap, n) {
-        let str = axiom;
-        let regex = this.helpers.makeRulesRegex(rulesMap);
-        for (let i = 0; i < n; i++) {
-            str = str.replace(regex, (match) => { return rulesMap.get(match); });
-        }
-        return str;
-    }
-
-
-    makePoints(str) {
+    makePoints(axiom, rules) {
         const VERTICAL = Math.PI / 2;
 
         let pointsObject = {};
@@ -68,8 +34,9 @@ class LsysPointsGen {
         let length = config.length;
         let pointsMap = this.helpers.initPointsMap(VERTICAL);
         let bounds = { minX: 0, maxX: 0, minY: 0, maxY: 0 };
+        let str = this.helpers.makeString(axiom, rules, config.iterations);
 
-        str.split('').forEach( v => {
+        str.split('').forEach(v => {
             switch (v) {
                 case 'F':
                     this.helpers.move(state, length);
@@ -114,7 +81,7 @@ class LsysPointsGen {
         pointsObject.minX = bounds.minX;
         pointsObject.minY = bounds.minY;
 
-        return pointsObject;
+        return this.helpers.toPositive(pointsObject);
     }
 
 
@@ -123,15 +90,15 @@ class LsysPointsGen {
      * @param  {pointsObject} points
      * @returns {pointObject}
      * @memberof LsysPointsGen
-     */
-    toPositive(points) {
+     *
+    toPositive(pointsObject) {
         let pointsMap = new Map();
-        let minX = points.minX;
-        let minY = points.minY;
+        let minX = pointsObject.minX;
+        let minY = pointsObject.minY;
         let isYneg = minY < 0;
         let isXneg = minX < 0;
 
-        points.map.forEach((v, k) => {
+        pointsObject.map.forEach((v, k) => {
             let point = Object.assign({}, v);
             if (isXneg) point.x += Math.abs(minX);
             if (isYneg) point.y += Math.abs(minY);
@@ -141,20 +108,11 @@ class LsysPointsGen {
         minX += isXneg ? Math.abs(minX) : 0;
         minY += isYneg ? Math.abs(minY) : 0;
 
-        return { map: pointsMap, width: points.width, height: points.height, minX: minX, minY: minY };
-    }
+        return { map: pointsMap, width: pointsObject.width, height: pointsObject.height, minX: minX, minY: minY };
+    }*/
 
     initHelpers() {
         this.helpers = {
-            // makeString()
-            makeRulesRegex: (rulesMap) => {
-                let strRegex = '';
-                rulesMap.forEach((v, k) => {
-                    strRegex += k + '|';
-                });
-                strRegex = strRegex[strRegex.length - 1] == '|' ? strRegex.slice(0, -1) : strRegex;
-                return new RegExp(strRegex, 'g');
-            },
             // makePoints()
             initState: (initialAngle) => {
                 let state = {};
@@ -170,6 +128,13 @@ class LsysPointsGen {
                 let pointsMap = new Map();
                 pointsMap.set(0, { x: 0, y: 0, angle: initialAngle, level: 0, parent: -1, index: 0 });
                 return pointsMap;
+            },
+            makeString: (axiom, rules, iterations) => {
+                let str = axiom;
+                for (let i = 0; i < iterations; i++) {
+                    str = str.replace(/X/g, rules);
+                }
+                return str;
             },
             copyObject: (obj) => {
                 return Object.assign({}, obj);
@@ -203,13 +168,32 @@ class LsysPointsGen {
                 point.parent = parentIndex;
                 pointsMap.set(state.index, point);
             },
-            saveCurrent: function (state) {                
+            saveCurrent: function (state) {
                 state.current.level = state.level;
                 let newState = this.copyObject(state.current);
                 state.stack.push(newState);
             },
             restoreCurrent: (state) => {
                 state.current = state.stack.pop();
+            },
+            toPositive: (pointsObject) => {
+                let pointsMap = new Map();
+                let minX = pointsObject.minX;
+                let minY = pointsObject.minY;
+                let isYneg = minY < 0;
+                let isXneg = minX < 0;
+
+                pointsObject.map.forEach((v, k) => {
+                    let point = Object.assign({}, v);
+                    if (isXneg) point.x += Math.abs(minX);
+                    if (isYneg) point.y += Math.abs(minY);
+                    pointsMap.set(k, point);
+                });
+
+                minX += isXneg ? Math.abs(minX) : 0;
+                minY += isYneg ? Math.abs(minY) : 0;
+
+                return { map: pointsMap, width: pointsObject.width, height: pointsObject.height, minX: minX, minY: minY };
             }
 
         }
@@ -246,9 +230,6 @@ module.exports = LsysPointsGen;
 /**
  * Contains initial configuration settings
  * @typedef  {object} configuration
- * @property  {string} [axiom = 'X'] String of symbols from allowed symbols defining the initial state of the system.\n
- * Allowed symbols: X,F,\[,\],+,-
- * @property  {string | string[]} [rules = 'X=F[-X][+X]'] One rule (string) or two (string[]) which defines what happens in each iteration
  * @property  {number} [length = 30] Distance to cover in each movement (F or X symbols)
  * @property  {number} [angle = 15] Amount of degrees to turn in each '+' or '-' symbol
  * @property  {number} [iterations = 2] Number of iterations
