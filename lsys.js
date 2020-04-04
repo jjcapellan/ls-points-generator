@@ -72,7 +72,7 @@ class LsysPointsGen {
 
                 default:
                     break;
-            } // end switch
+            }
         });
 
         pointsObject.map = pointsMap;
@@ -83,33 +83,6 @@ class LsysPointsGen {
 
         return this.helpers.toPositive(pointsObject);
     }
-
-
-    /**
-     * Returns a new pointsObject with all points moved to positive coordinates.
-     * @param  {pointsObject} points
-     * @returns {pointObject}
-     * @memberof LsysPointsGen
-     *
-    toPositive(pointsObject) {
-        let pointsMap = new Map();
-        let minX = pointsObject.minX;
-        let minY = pointsObject.minY;
-        let isYneg = minY < 0;
-        let isXneg = minX < 0;
-
-        pointsObject.map.forEach((v, k) => {
-            let point = Object.assign({}, v);
-            if (isXneg) point.x += Math.abs(minX);
-            if (isYneg) point.y += Math.abs(minY);
-            pointsMap.set(k, point);
-        });
-
-        minX += isXneg ? Math.abs(minX) : 0;
-        minY += isYneg ? Math.abs(minY) : 0;
-
-        return { map: pointsMap, width: pointsObject.width, height: pointsObject.height, minX: minX, minY: minY };
-    }*/
 
     initHelpers() {
         this.helpers = {
@@ -197,7 +170,7 @@ class LsysPointsGen {
             }
 
         }
-    }// end initHelpers
+    }
 
 }
 
