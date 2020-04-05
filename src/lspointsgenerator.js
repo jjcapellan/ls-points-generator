@@ -19,7 +19,7 @@ class LsPointsGenerator {
         this.initHelpers();
 
         this.config = {};
-        this.config.length = length;
+        this.config.length = this.helpers.validateLength(length);
         this.config.angle = this.helpers.angleToRadians(angle);
         this.config.iterations = iterations;
         this.config.branchFactor = branchFactor;
@@ -181,6 +181,15 @@ class LsPointsGenerator {
                     angle = angle * RADS_PER_DEGREE;
                 }
                 return angle;
+            },
+            validateLength: (length) => {
+                if(Array.isArray(length)){
+                    length[0] = length[0] < 1 ? 1 : length[0];
+                    length[1] = length[1] < 1 ? 1 : length[1];
+                } else {
+                    length = length < 1 ? 1 : length;
+                }
+                return length;
             }
 
         }
