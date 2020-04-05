@@ -20,7 +20,7 @@ class LsPointsGenerator {
 
         this.config = {};
         this.config.length = this.helpers.validateLength(length);
-        this.config.angle = this.helpers.angleToRadians(angle);
+        this.config.angle = this.helpers.validateAngle(angle);
         this.config.iterations = iterations;
         this.config.branchFactor = branchFactor;
     }
@@ -190,6 +190,19 @@ class LsPointsGenerator {
                     length = length < 1 ? 1 : length;
                 }
                 return length;
+            },
+            validateAngle: function(angle){
+                if(Array.isArray(angle)){
+                    angle[0] = angle[0] < 1 ? 1 : angle[0];
+                    angle[0] = angle[0] > 359 ? 359 : angle[0];
+                    angle[1] = angle[1] < 1 ? 1 : angle[1];
+                    angle[1] = angle[1] > 359 ? 359 : angle[1];
+                } else {
+                    angle = angle < 1 ? 1 : angle;
+                    angle = angle > 359 ? 359 : angle;
+                }
+
+                return this.angleToRadians(angle);
             }
 
         }
