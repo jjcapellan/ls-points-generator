@@ -1,4 +1,4 @@
-const Lsys = require('./lsys');
+const Lsys = require('../src/lspointsgenerator');
 
 
 let tested = 0;
