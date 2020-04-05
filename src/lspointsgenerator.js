@@ -22,7 +22,7 @@ class LsPointsGenerator {
         this.config.length = length;
         this.config.angle = this.helpers.angleToRadians(angle);
         this.config.iterations = iterations;
-        this.config.branchFactor = branchFactor; 
+        this.config.branchFactor = branchFactor;
     }
 
     makePoints(axiom, rules) {
@@ -40,14 +40,14 @@ class LsPointsGenerator {
         let str = this.helpers.makeString(axiom, rules, config.iterations);
 
         str.split('').forEach(v => {
+            if (v == 'F' || v == 'X') {
+                distance = this.helpers.getValueFromRange(config.length, israngeLength) * Math.pow(config.branchFactor, state.current.level);
+                this.helpers.move(state, distance);
+                this.helpers.savePoint(state, pointsMap);
+                this.helpers.updateBounds(state.current, bounds);
+                return;
+            }
             switch (v) {
-                case 'F':
-                    distance = this.helpers.getValueFromRange(config.length, israngeLength);
-                    this.helpers.move(state, distance);
-                    this.helpers.savePoint(state, pointsMap);
-                    this.helpers.updateBounds(state.current, bounds);
-                    break;
-
                 case '+':
                     turnInRadians = this.helpers.getValueFromRange(config.angle, israngeAngle);
                     state.current.angle += turnInRadians;
@@ -66,13 +66,6 @@ class LsPointsGenerator {
                 case ']':
                     state.level--;
                     this.helpers.restoreCurrent(state);
-                    break;
-
-                case 'X':              // TODO: implement ends of branch
-                    distance = this.helpers.getValueFromRange(config.length, israngeLength);
-                    this.helpers.move(state, distance);
-                    this.helpers.savePoint(state, pointsMap);
-                    this.helpers.updateBounds(state.current, bounds);
                     break;
 
                 default:
@@ -194,11 +187,11 @@ class LsPointsGenerator {
                 minX += isXneg ? Math.abs(minX) : 0;
                 minY += isYneg ? Math.abs(minY) : 0;
 
-                return { map: pointsMap, width: pointsObject.width, height: pointsObject.height};
+                return { map: pointsMap, width: pointsObject.width, height: pointsObject.height };
             },
             angleToRadians: (angle) => {
                 const RADS_PER_DEGREE = Math.PI / 180;
-                if(Array.isArray(angle)){                    
+                if (Array.isArray(angle)) {
                     angle[0] = angle[0] * RADS_PER_DEGREE;
                     angle[1] = angle[1] * RADS_PER_DEGREE;
                 } else {
@@ -211,8 +204,11 @@ class LsPointsGenerator {
     }
 
 }
+try {
+    module.exports = LsPointsGenerator;
+} catch (err) {
 
-module.exports = LsPointsGenerator;
+}
 
 // ************************ TYPE DEFINITIONS *************************************
 // *******************************************************************************
