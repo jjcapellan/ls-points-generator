@@ -50,7 +50,7 @@ function testmakePoints() {
 function testtoPositive(){
     let name = 'toPositive';
     let lsys = new Lsys({length: 10, angle: 90, iterations: 1 }); // T sharp
-    let expected = '3:0 minX:0';
+    let expected = '3:0';
     let pointsMap = new Map([ // F[-X][+X]
         [0, {x:0, y:0}],
         [1, {x:0, y:10}],
@@ -59,8 +59,8 @@ function testtoPositive(){
     ]);
     let pointsObject = {map: pointsMap, width: 20, height: 10, minX: -10, minY: 0};
     let res = lsys.helpers.toPositive(pointsObject);
-    let p2 = res.map.get(3), minX = res.minX;
-    let result = `3:${p2.x} minX:${minX}`;
+    let p2 = res.map.get(3);
+    let result = `3:${p2.x}`;
     test(name, expected, result);
 }
 
