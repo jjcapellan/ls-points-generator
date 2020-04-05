@@ -14,7 +14,7 @@ class LsPointsGenerator {
      * @param  {configuration} configuration Contains initial settings 
      * @memberof ScrollingCamera
      */
-    constructor({ length = 30, angle = 15, iterations = 2, branchFactor = 1, maxPoints = 34000 } = {}) {
+    constructor({ length = 30, angle = 15, iterations = 2, branchFactor = 1, maxPoints = 30000 } = {}) {
 
         this.initHelpers();
 
@@ -29,8 +29,10 @@ class LsPointsGenerator {
     makePoints(axiom, rules) {
         const VERTICAL = Math.PI / 2;
 
+        let maxIterations = this.helpers.maxIterations(rules, this.config.maxPoints);
+        this.config.iterations = this.config.iterations > maxIterations ? maxIterations : this.config.iterations;
+
         let pointsObject = {};
-        let pointsCounter = 0;
         let state = this.helpers.initState(VERTICAL);
         let config = this.config;
         let israngeLength = Array.isArray(config.length);
@@ -42,14 +44,12 @@ class LsPointsGenerator {
         let str = this.helpers.makeString(axiom, rules, config.iterations);
 
         for (let i = 0; i < str.length; i++) {
-            if (pointsCounter > config.maxPoints) break;
             let v = str.charAt(i);
             if (v == 'F' || v == 'X') {
                 distance = this.helpers.getValueFromRange(config.length, israngeLength) * Math.pow(config.branchFactor, state.current.level);
                 this.helpers.move(state, distance);
                 this.helpers.savePoint(state, pointsMap);
                 this.helpers.updateBounds(state.current, bounds);
-                pointsCounter++;
                 continue;
             }
             switch (v) {
@@ -208,6 +208,16 @@ class LsPointsGenerator {
                 }
 
                 return this.angleToRadians(angle);
+            },
+            maxIterations: (rule, maxPoints) => {
+                // Fs accumulated in last period = (Xs acumulated in last period / Xs first period) * Fs first period
+                // Xs accumulated in last period = Xs first period * ((Xs first period)^(iterations)-1)/(Xs first period - 1)
+                // Fs + Xs = maxPoints <---- iterations is the value to get
+                const nX0 = (rule.match(/X/g) || []).length;
+                const nF0 = (rule.match(/F/g) || []).length;
+
+                let maxIterations = Math.round(Math.log(1 + ((nX0 - 1) * nX0 * maxPoints) / (nX0 * nF0 + nX0 * nX0)) / Math.log(nX0));
+                return maxIterations;
             }
 
         }
