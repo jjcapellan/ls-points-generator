@@ -1,4 +1,5 @@
 const Lsys = require('../src/lspointsgenerator');
+const { performance } = require('perf_hooks');
 
 
 let tested = 0;
@@ -23,6 +24,10 @@ function test(funcName, expected, result) {
     tested++;
 }
 
+function perform(funcName, t0, t1, cicles) {
+    console.log(`${funcName} performance: ${cicles} ops    ${(t1 - t0)/cicles} ms/op`);
+}
+
 function testmakeString() {
     let name = 'makeString';
     let lsys = new Lsys();
@@ -45,6 +50,19 @@ function testmakePoints() {
     let result = `0:${p0['x']},${p0['y']} 1:${p1['x']},${p1['y']} ` +
         `2:${p2['x']},${p2['y']} 3:${p3['x']},${p3['y']} width:${width} height:${height}`;
     test(name, expected, result);
+}
+
+function performmakePoints(cicles){
+    let name = 'makePoints';
+    let lsys = new Lsys({ length: 10, angle: 15, iterations: 16 });
+    let axiom = 'X';
+    let rules = 'F[-X][+X]'; // T sharp
+    let t0 = performance.now();
+    for(let i=0; i< cicles; i++){
+        lsys.makePoints(axiom, rules);
+    }
+    let t1 = performance.now();
+    perform(name, t0, t1, cicles);
 }
 
 function testtoPositive(){
@@ -89,6 +107,8 @@ testmakeString();
 testmakePoints();
 testtoPositive();
 testgetValueFromRange();
+
+performmakePoints(10);
 
 console.log(`Passed ${passed} of ${tested}`);
 
