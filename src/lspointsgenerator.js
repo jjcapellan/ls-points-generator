@@ -154,7 +154,7 @@ class LsPointsGenerator {
             getValueFromRange: (value, isArray) => {
                 let num = 0;
                 if (isArray) {
-                    num = Math.round(Math.random() * (value[1] - value[0]) + value[0]);
+                    num = Math.random() * (value[1] - value[0]) + value[0];
                 } else {
                     num = value;
                 }
