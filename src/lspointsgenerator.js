@@ -14,7 +14,7 @@ class LsPointsGenerator {
      * @param  {configuration} configuration Contains initial settings 
      * @memberof ScrollingCamera
      */
-    constructor({ length = 30, angle = 15, iterations = 2, branchFactor = 1 } = {}) {
+    constructor({ length = 30, angle = 15, iterations = 2, branchFactor = 1, maxPoints = 34000 } = {}) {
 
         this.initHelpers();
 
@@ -23,12 +23,14 @@ class LsPointsGenerator {
         this.config.angle = this.helpers.validateAngle(angle);
         this.config.iterations = iterations;
         this.config.branchFactor = branchFactor;
+        this.config.maxPoints = maxPoints;
     }
 
     makePoints(axiom, rules) {
         const VERTICAL = Math.PI / 2;
 
         let pointsObject = {};
+        let pointsCounter = 0;
         let state = this.helpers.initState(VERTICAL);
         let config = this.config;
         let israngeLength = Array.isArray(config.length);
@@ -39,13 +41,16 @@ class LsPointsGenerator {
         let bounds = { minX: 0, maxX: 0, minY: 0, maxY: 0 };
         let str = this.helpers.makeString(axiom, rules, config.iterations);
 
-        str.split('').forEach(v => {
+        for (let i = 0; i < str.length; i++) {
+            if (pointsCounter > config.maxPoints) break;
+            let v = str.charAt(i);
             if (v == 'F' || v == 'X') {
                 distance = this.helpers.getValueFromRange(config.length, israngeLength) * Math.pow(config.branchFactor, state.current.level);
                 this.helpers.move(state, distance);
                 this.helpers.savePoint(state, pointsMap);
                 this.helpers.updateBounds(state.current, bounds);
-                return;
+                pointsCounter++;
+                continue;
             }
             switch (v) {
                 case '+':
@@ -70,8 +75,8 @@ class LsPointsGenerator {
 
                 default:
                     break;
-            }
-        });
+            };
+        };
 
         pointsObject.map = pointsMap;
         pointsObject.width = bounds.maxX - bounds.minX;
@@ -183,7 +188,7 @@ class LsPointsGenerator {
                 return angle;
             },
             validateLength: (length) => {
-                if(Array.isArray(length)){
+                if (Array.isArray(length)) {
                     length[0] = length[0] < 1 ? 1 : length[0];
                     length[1] = length[1] < 1 ? 1 : length[1];
                 } else {
@@ -191,8 +196,8 @@ class LsPointsGenerator {
                 }
                 return length;
             },
-            validateAngle: function(angle){
-                if(Array.isArray(angle)){
+            validateAngle: function (angle) {
+                if (Array.isArray(angle)) {
                     angle[0] = angle[0] < 1 ? 1 : angle[0];
                     angle[0] = angle[0] > 359 ? 359 : angle[0];
                     angle[1] = angle[1] < 1 ? 1 : angle[1];
