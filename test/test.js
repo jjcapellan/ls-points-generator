@@ -82,12 +82,6 @@ function testtoPositive(){
     test(name, expected, result);
 }
 
-function testprint(){
-    let lsys = new Lsys({length: 4, angle: 90, iterations: 1 }); // T sharp
-    let pointsObject = lsys.makePoints('X', 'F[-X][+X]');
-    lsys.print(pointsObject, 10, 10);
-}
-
 function testgetValueFromRange(){
     let name = 'getValueFromRange';
     let lsys = new Lsys();
@@ -101,8 +95,6 @@ function testgetValueFromRange(){
     test(name, expected, result);
 }
 
-
-testprint(); // visual testing
 testmakeString();
 testmakePoints();
 testtoPositive();
