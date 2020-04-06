@@ -5,7 +5,7 @@
 
 
 /**
- * The purpose of this class is to generate a map of points based on a L-system (Lindenmayer system).
+ * The purpose of this class is to generate a map of points based on the L-system (Lindenmayer system).
  * @class
  */
 class LsPointsGenerator {
@@ -28,25 +28,24 @@ class LsPointsGenerator {
 
     makePoints(axiom, rules) {
         const VERTICAL = Math.PI / 2;
-
-        let maxIterations = this.helpers.maxIterations(rules, this.config.maxPoints);
-        this.config.iterations = this.config.iterations > maxIterations ? maxIterations : this.config.iterations;
-
-        let pointsObject = {};
-        let state = this.helpers.initState(VERTICAL);
-        let config = this.config;
-        let israngeLength = Array.isArray(config.length);
-        let distance = 0;
-        let israngeAngle = Array.isArray(config.angle);
-        let turnInRadians = 0;
+        const MAX_ITERATIONS = this.helpers.maxIterations(rules, this.config.maxPoints);
+        const CONFIG = this.config; 
+        this.config.iterations = this.config.iterations > MAX_ITERATIONS ? MAX_ITERATIONS : this.config.iterations;
+        const STRING = this.helpers.makeString(axiom, rules, CONFIG.iterations);
+        
+        let israngeLength = Array.isArray(CONFIG.length);
+        let israngeAngle = Array.isArray(CONFIG.angle);
+        let state = this.helpers.initState(VERTICAL);   
         let pointsMap = this.helpers.initPointsMap(VERTICAL);
-        let bounds = { minX: 0, maxX: 0, minY: 0, maxY: 0 };
-        let str = this.helpers.makeString(axiom, rules, config.iterations);
+        let distance = 0;
+        let turnInRadians = 0;
+        let bounds = { minX: 0, maxX: 0, minY: 0, maxY: 0 };        
+        let pointsObject = {};
 
-        for (let i = 0; i < str.length; i++) {
-            let v = str.charAt(i);
+        for (let i = 0; i < STRING.length; i++) {
+            let v = STRING.charAt(i);
             if (v == 'F' || v == 'X') {
-                distance = this.helpers.getValueFromRange(config.length, israngeLength) * Math.pow(config.branchFactor, state.current.level);
+                distance = this.helpers.getValueFromRange(CONFIG.length, israngeLength) * Math.pow(CONFIG.branchFactor, state.current.level);
                 this.helpers.move(state, distance);
                 this.helpers.savePoint(state, pointsMap);
                 this.helpers.updateBounds(state.current, bounds);
@@ -54,12 +53,12 @@ class LsPointsGenerator {
             }
             switch (v) {
                 case '+':
-                    turnInRadians = this.helpers.getValueFromRange(config.angle, israngeAngle);
+                    turnInRadians = this.helpers.getValueFromRange(CONFIG.angle, israngeAngle);
                     state.current.angle += turnInRadians;
                     break;
 
                 case '-':
-                    turnInRadians = this.helpers.getValueFromRange(config.angle, israngeAngle);
+                    turnInRadians = this.helpers.getValueFromRange(CONFIG.angle, israngeAngle);
                     state.current.angle -= turnInRadians;
                     break;
 
