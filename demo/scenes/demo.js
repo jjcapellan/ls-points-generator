@@ -4,6 +4,7 @@ class Demo extends Phaser.Scene {
   }
 
   create(data) {
+
     const RULES = {
       'binary_tree': 'F[-X][+X]',
       'seaweed_1': 'X[+X]X[-X]X',
@@ -15,19 +16,13 @@ class Demo extends Phaser.Scene {
     let branchFactor = data.branchFactor;
     let thick = data.thick;
 
-    let angle = 0;
-    if (data.minAngle == data.maxAngle) {
-      angle = data.minAngle;
-    } else {
-      angle = [data.minAngle, data.maxAngle];
-    }
-    
-    let length = 0;
-    if (data.minLength == data.maxLength) {
-      length = data.minLength;
-    } else {
-      length = [data.minLength, data.maxLength];
-    }
+    let angle = data.minAngle == data.maxAngle
+      ? data.minAngle
+      : [data.minAngle, data.maxAngle];
+
+    let length = data.minLength == data.maxLength
+      ? data.minLength
+      : [data.minLength, data.maxLength];
 
     let ls = new LsPointsGenerator({ length: length, angle: angle, branchFactor: branchFactor, iterations: iterations });
     let pointsObject = ls.makePoints('X', rule);
@@ -35,6 +30,7 @@ class Demo extends Phaser.Scene {
   }
 
   drawPoints(pointsObject, thick) {
+
     const MAP = pointsObject.map;
     const MAP_HEIGHT = pointsObject.height;
     const GAME_WIDTH = this.game.config.width;
@@ -50,7 +46,7 @@ class Demo extends Phaser.Scene {
 
     if (this.textures.exists('lstexture')) {
       this.game.textures.remove('lstexture');
-    };    
+    };
 
     MAP.forEach((point, k) => {
       if (point.parent != -1) {
