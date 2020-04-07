@@ -94,6 +94,7 @@ class LsPointsGenerator {
                 state.stack = [{ x: 0, y: 0, angle: initialAngle, level: 0, index: 0 }];
                 state.level = 0;
                 state.index = 0;
+                state.parent = 0;
                 return state;
             },
             initPointsMap: (initialAngle) => {
@@ -128,6 +129,7 @@ class LsPointsGenerator {
                 state.current.x = x1;
                 state.current.y = y1;
 
+                state.parent = state.current.index;
                 state.index++;
                 state.current.index = state.index;
             },
@@ -140,11 +142,8 @@ class LsPointsGenerator {
                 }
                 return num;
             },
-            getParent: (state) => {
-                return state.stack[state.stack.length - 1].index;
-            },
             savePoint: function (state, pointsMap) {
-                let parentIndex = this.getParent(state);
+                let parentIndex = state.parent;
                 let point = this.copyObject(state.current);
                 point.parent = parentIndex;
                 pointsMap.set(state.index, point);
