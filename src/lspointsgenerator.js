@@ -52,12 +52,12 @@ class LsPointsGenerator {
                 continue;
             }
             switch (v) {
-                case '+':
+                case '-':
                     turnInRadians = this.helpers.getValueFromRange(CONFIG.angle, israngeAngle);
                     state.current.angle += turnInRadians;
                     break;
 
-                case '-':
+                case '+':
                     turnInRadians = this.helpers.getValueFromRange(CONFIG.angle, israngeAngle);
                     state.current.angle -= turnInRadians;
                     break;
