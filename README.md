@@ -5,6 +5,4 @@
 
 Demo: https://jjcapellan.github.io/ls-points-generator/
 
-**Important**: Still in alpha version.
-
 
