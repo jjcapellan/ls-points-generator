@@ -24,7 +24,7 @@ class Gui extends Phaser.Scene {
                 maxAngle: 15,
                 branchFactor: 1,
                 thick: 1,
-                rule:'X[+X]X[-X]X'
+                rule: 'X[+X]X[-X]X'
             },
             'seaweed_2': {
                 iterations: 5,
@@ -51,7 +51,7 @@ class Gui extends Phaser.Scene {
         const gui_maxLength = gui.add(params, 'maxLength', 0, 100).step(1);
         const gui_branchFactor = gui.add(params, 'branchFactor', 0.80, 1.2).step(0.01);
         const gui_thick = gui.add(params, 'thick', 1, 10).step(1);
-        const gui_preset = gui.add(presets, 'current', ['binary_tree', 'seaweed_1','seaweed_2']);
+        const gui_preset = gui.add(presets, 'current', ['binary_tree', 'seaweed_1', 'seaweed_2']);
         const gui_refresh = gui.add(params, 'refresh');
 
         gui_iterations.onFinishChange(reset);
@@ -64,31 +64,27 @@ class Gui extends Phaser.Scene {
         gui_preset.onFinishChange(changePreset);
 
         function reset() {
-            t.scene.stop('demo');            
+            t.scene.stop('demo');
             t.scene.launch('demo', params);
 
         }
 
-        function changePreset(preset){
+        function changePreset(preset) {
             copyProperties(presets[preset], params);
             updateGui();
             reset();
         }
 
-        function updateGui(){
-            gui_iterations.setValue(params.iterations);
-            gui_minAngle.setValue(params.minAngle);
-            gui_maxAngle.setValue(params.maxAngle);
-            gui_minLength.setValue(params.minLength);
-            gui_maxLength.setValue(params.maxLength);
-            gui_branchFactor.setValue(params.branchFactor);
-            gui_thick.setValue(params.thick);
+        function updateGui() {
+            for (let i in gui.__controllers) {
+                gui.__controllers[i].updateDisplay();
+            }
         }
 
-        function copyProperties(source, target){
+        function copyProperties(source, target) {
             for (const prop in source) {
                 target[prop] = source[prop];
-              }
+            }
         }
 
         this.scene.launch('demo', params);
