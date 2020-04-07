@@ -4,21 +4,11 @@ class LoadScreen extends Phaser.Scene {
     }
   
     preload() {
-      let params = { 
-        minLength: 50, 
-        maxLength: 60, 
-        minAngle: 3, 
-        maxAngle: 41, 
-        branchFactor: 0.90, 
-        iterations: 4, 
-        model: 'binary_tree',
-        thick: 8
-      };
-      this.scene.launch('demo', params);
-      this.scene.start('gui', params);
+      this.scene.start('gui');
   
+      // For future load options
       this.load.on('complete',function(){
-          this.scene.start('demo');
+          this.scene.start('gui');
       }, this);  
       
       
