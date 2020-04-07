@@ -4,14 +4,8 @@ class Demo extends Phaser.Scene {
   }
 
   create(data) {
-
-    const RULES = {
-      'binary_tree': 'F[-X][+X]',
-      'seaweed_1': 'X[+X]X[-X]X',
-      'seaweed_2': 'XX-[-X+X+X]+[+X-X-X]'
-    }
-
-    let rule = RULES[data.model];
+    
+    let rule = data.rule;
     let iterations = data.iterations;
     let branchFactor = data.branchFactor;
     let thick = data.thick;
