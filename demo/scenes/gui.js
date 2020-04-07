@@ -36,6 +36,16 @@ class Gui extends Phaser.Scene {
                 thick: 1,
                 rule: 'XX-[-X+X+X]+[+X-X-X]'
             },
+            'koch_curve': {
+                iterations: 4,
+                minLength: 5,
+                maxLength: 5,
+                minAngle: 90,
+                maxAngle: 90,
+                branchFactor: 1,
+                thick: 1,
+                rule: 'X+X-X-X+X'
+            },
             current: 'binary_tree',
             refresh: reset
         };
@@ -51,7 +61,7 @@ class Gui extends Phaser.Scene {
         const gui_maxLength = gui.add(params, 'maxLength', 0, 100).step(1);
         const gui_branchFactor = gui.add(params, 'branchFactor', 0.80, 1.2).step(0.01);
         const gui_thick = gui.add(params, 'thick', 1, 10).step(1);
-        const gui_preset = gui.add(presets, 'current', ['binary_tree', 'seaweed_1', 'seaweed_2']);
+        const gui_preset = gui.add(presets, 'current', ['binary_tree', 'seaweed_1', 'seaweed_2','koch_curve']);
         const gui_refresh = gui.add(params, 'refresh');
 
         gui_iterations.onFinishChange(reset);
