@@ -4,7 +4,8 @@ class Demo extends Phaser.Scene {
   }
 
   create(data) {
-    
+    const GAME_HEIGHT = this.game.config.height;
+
     let rule = data.rule;
     let iterations = data.iterations;
     let branchFactor = data.branchFactor;
@@ -20,7 +21,16 @@ class Demo extends Phaser.Scene {
 
     let ls = new LsPointsGenerator({ length: length, angle: angle, branchFactor: branchFactor, iterations: iterations });
     let pointsObject = ls.makePoints('X', rule);
+
     this.drawPoints(pointsObject, thick);
+
+    this.add.text(
+      2,
+      GAME_HEIGHT-2,
+      `Axiom: X     Rule: ${rule}`,
+      { fontFamily: 'Arial', fontSize: 18, color: '#bbbbbb' }
+    )
+      .setOrigin(0, 1);
   }
 
   drawPoints(pointsObject, thick) {
