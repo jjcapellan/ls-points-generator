@@ -1,5 +1,6 @@
 /defs
 /node_modules
 /.cache
+.vscode/
 /demo/*.json
 package-lock.json
