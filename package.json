@@ -14,7 +14,10 @@
     "type": "git",
     "url": "git+https://github.com/jjcapellan/ls-points-generator.git"
   },
-  "keywords": ["l-systems", "Lindenmayer"],
+  "keywords": [
+    "l-systems",
+    "Lindenmayer"
+  ],
   "author": "Juan Jose Capellan",
   "license": "MIT",
   "bugs": {
