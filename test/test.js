@@ -44,7 +44,7 @@ function testmakePoints() {
     let lsys = new Lsys({ length: 10, angle: 90, iterations: 1 });
     let axiom = 'X';
     let rules = 'F[-X][+X]'; // T sharp
-    let expected = '0:10,0 1:10,10 2:20,10 3:0,10 width:20 height:10'; // format --> index : x , y ... width: number, height: number
+    let expected = '0:10,0 1:10,10 2:0,10 3:20,10 width:20 height:10'; // format --> index : x , y ... width: number, height: number
     let res = lsys.makePoints(axiom, rules); // {map,width,height,...}
     let p0 = res.map.get(0), p1 = res.map.get(1), p2 = res.map.get(2), p3 = res.map.get(3), width=res.width, height=res.height;
     let result = `0:${p0['x']},${p0['y']} 1:${p1['x']},${p1['y']} ` +
