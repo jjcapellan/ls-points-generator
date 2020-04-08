@@ -19,8 +19,8 @@ class LsPointsGenerator {
         this.initHelpers();
 
         this.config = {};
-        this.config.length = this.helpers.validateLength(length);
-        this.config.angle = this.helpers.validateAngle(angle);
+        this.config.length = length;
+        this.config.angle = angle;
         this.config.iterations = iterations;
         this.config.branchFactor = branchFactor;
         this.config.maxPoints = maxPoints;
@@ -29,12 +29,14 @@ class LsPointsGenerator {
     makePoints(axiom, rules) {
         const VERTICAL = Math.PI / 2;
         const MAX_ITERATIONS = this.helpers.maxIterations(rules, this.config.maxPoints);
-        const CONFIG = this.config; 
+        const CONFIG = this.config;
+        const LENGTH = this.helpers.validateLength(CONFIG.length);
+        const ANGLE = this.helpers.validateAngle(CONFIG.angle);
         this.config.iterations = this.config.iterations > MAX_ITERATIONS ? MAX_ITERATIONS : this.config.iterations;
         const STRING = this.helpers.makeString(axiom, rules, CONFIG.iterations);
         
-        let israngeLength = Array.isArray(CONFIG.length);
-        let israngeAngle = Array.isArray(CONFIG.angle);
+        let israngeLength = Array.isArray(LENGTH);
+        let israngeAngle = Array.isArray(ANGLE);
         let state = this.helpers.initState(VERTICAL);   
         let pointsMap = this.helpers.initPointsMap(VERTICAL);
         let distance = 0;
@@ -45,7 +47,7 @@ class LsPointsGenerator {
         for (let i = 0; i < STRING.length; i++) {
             let v = STRING.charAt(i);
             if (v == 'F' || v == 'X') {
-                distance = this.helpers.getValueFromRange(CONFIG.length, israngeLength) * Math.pow(CONFIG.branchFactor, state.current.level);
+                distance = this.helpers.getValueFromRange(LENGTH, israngeLength) * Math.pow(CONFIG.branchFactor, state.current.level);
                 this.helpers.move(state, distance);
                 this.helpers.savePoint(state, pointsMap);
                 this.helpers.updateBounds(state.current, bounds);
@@ -53,12 +55,12 @@ class LsPointsGenerator {
             }
             switch (v) {
                 case '-':
-                    turnInRadians = this.helpers.getValueFromRange(CONFIG.angle, israngeAngle);
+                    turnInRadians = this.helpers.getValueFromRange(ANGLE, israngeAngle);
                     state.current.angle += turnInRadians;
                     break;
 
                 case '+':
-                    turnInRadians = this.helpers.getValueFromRange(CONFIG.angle, israngeAngle);
+                    turnInRadians = this.helpers.getValueFromRange(ANGLE, israngeAngle);
                     state.current.angle -= turnInRadians;
                     break;
 
