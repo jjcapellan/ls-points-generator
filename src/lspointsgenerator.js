@@ -104,10 +104,11 @@ class LsPointsGenerator {
                 pointsMap.set(0, { x: 0, y: 0, angle: initialAngle, level: 0, parent: -1, index: 0 });
                 return pointsMap;
             },
-            makeString: (axiom, rules, iterations) => {
-                let str = axiom;
+            makeString: (axiom, rule, iterations) => {
+                let str = axiom.toUpperCase();
+                rule = rule.toUpperCase();
                 for (let i = 0; i < iterations; i++) {
-                    str = str.replace(/X/g, rules);
+                    str = str.replace(/X/g, rule);
                 }
                 return str;
             },
