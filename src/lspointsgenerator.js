@@ -5,7 +5,8 @@
 
 
 /**
- * The purpose of this class is to generate a map of points based on the L-system (Lindenmayer system).
+ * Class to generate a 2d point map by introducing a randomness factor into a 
+ * [Lindenmayer system](https://en.wikipedia.org/wiki/L-system).
  * @class
  */
 class LsPointsGenerator {
