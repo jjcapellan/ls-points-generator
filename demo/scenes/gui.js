@@ -7,27 +7,27 @@ class Gui extends Phaser.Scene {
         let t = this;
         let presets = {
             'binary_tree': {
-                iterations: 12,
+                iterations: 10,
                 minLength: 50,
                 maxLength: 60,
                 minAngle: 3,
                 maxAngle: 34,
                 branchFactor: 0.90,
                 thick: 8,
-                color0: [255, 255, 255],
-                color1: [255, 255, 255],
+                color0: [255, 255, 0],
+                color1: [119, 250, 91],
                 rule: 'F[-X][+X]'
             },
             'seaweed_1': {
-                iterations: 6,
-                minLength: 3,
-                maxLength: 6,
+                iterations: 4,
+                minLength: 6,
+                maxLength: 10,
                 minAngle: 11,
                 maxAngle: 15,
                 branchFactor: 1,
                 thick: 1,
-                color0: [255, 255, 255],
-                color1: [255, 255, 255],
+                color0: [255, 255, 0],
+                color1: [25, 185, 15],
                 rule: 'X[+X]X[-X]X'
             },
             'seaweed_2': {
@@ -38,8 +38,8 @@ class Gui extends Phaser.Scene {
                 maxAngle: 24,
                 branchFactor: 0.96,
                 thick: 1,
-                color0: [255, 255, 255],
-                color1: [255, 255, 255],
+                color0: [255, 255, 0],
+                color1: [22, 145, 14],
                 rule: 'XX-[-X+X+X]+[+X-X-X]'
             },
             'koch_curve': {
