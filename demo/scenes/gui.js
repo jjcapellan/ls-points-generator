@@ -14,6 +14,8 @@ class Gui extends Phaser.Scene {
                 maxAngle: 34,
                 branchFactor: 0.90,
                 thick: 8,
+                color0: [255, 255, 255],
+                color1: [255, 255, 255],
                 rule: 'F[-X][+X]'
             },
             'seaweed_1': {
@@ -24,6 +26,8 @@ class Gui extends Phaser.Scene {
                 maxAngle: 15,
                 branchFactor: 1,
                 thick: 1,
+                color0: [255, 255, 255],
+                color1: [255, 255, 255],
                 rule: 'X[+X]X[-X]X'
             },
             'seaweed_2': {
@@ -34,6 +38,8 @@ class Gui extends Phaser.Scene {
                 maxAngle: 24,
                 branchFactor: 0.96,
                 thick: 1,
+                color0: [255, 255, 255],
+                color1: [255, 255, 255],
                 rule: 'XX-[-X+X+X]+[+X-X-X]'
             },
             'koch_curve': {
@@ -44,6 +50,8 @@ class Gui extends Phaser.Scene {
                 maxAngle: 90,
                 branchFactor: 1,
                 thick: 1,
+                color0: [255, 255, 255],
+                color1: [255, 255, 255],
                 rule: 'X+X-X-X+X'
             },
             current: 'binary_tree',
@@ -61,6 +69,8 @@ class Gui extends Phaser.Scene {
         const gui_maxLength = gui.add(params, 'maxLength', 0, 100).step(1);
         const gui_branchFactor = gui.add(params, 'branchFactor', 0.80, 1.2).step(0.01);
         const gui_thick = gui.add(params, 'thick', 1, 10).step(1);
+        const gui_color0 = gui.addColor(params, 'color0');
+        const gui_color1 = gui.addColor(params, 'color1');
         const gui_preset = gui.add(presets, 'current', ['binary_tree', 'seaweed_1', 'seaweed_2','koch_curve']);
         const gui_refresh = gui.add(params, 'refresh');
 
@@ -71,6 +81,8 @@ class Gui extends Phaser.Scene {
         gui_minLength.onFinishChange(reset);
         gui_branchFactor.onFinishChange(reset);
         gui_thick.onFinishChange(reset);
+        gui_color0.onFinishChange(reset);
+        gui_color1.onFinishChange(reset);
         gui_preset.onFinishChange(changePreset);
 
         function reset() {
