@@ -262,4 +262,7 @@ try {
  * It can be a number or an array representing a range of values ([min, max])
  * @property  {number} [iterations = 2] Number of iterations
  * @property  {number} [branchFactor = 1] Modify branch length based on deep level. (0-1)
+ * @property  {number} [maxPoints = 30000] Limits the number of generated points. The amount of points \n
+ * that will be generated is precalculated, so if it exceed this \n
+ * parameter the number of iterations are adjusted.
  */
