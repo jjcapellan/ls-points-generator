@@ -34,19 +34,19 @@ class LsPointsGenerator {
         const ANGLE = this.helpers.validateAngle(CONFIG.angle);
         this.config.iterations = this.config.iterations > MAX_ITERATIONS ? MAX_ITERATIONS : this.config.iterations;
         const STRING = this.helpers.makeString(axiom, rules, CONFIG.iterations);
-        
+
         let israngeLength = Array.isArray(LENGTH);
         let israngeAngle = Array.isArray(ANGLE);
-        let state = this.helpers.initState(VERTICAL);   
+        let state = this.helpers.initState(VERTICAL);
         let pointsMap = this.helpers.initPointsMap(VERTICAL);
         let distance = 0;
         let turnInRadians = 0;
-        let bounds = { minX: 0, maxX: 0, minY: 0, maxY: 0 };        
+        let bounds = { minX: 0, maxX: 0, minY: 0, maxY: 0 };
         let pointsObject = {};
 
         for (let i = 0; i < STRING.length; i++) {
             let v = STRING.charAt(i);
-            if (v == 'F' || v == 'X') {
+            if (v == 'F') {
                 distance = this.helpers.getValueFromRange(LENGTH, israngeLength) * Math.pow(CONFIG.branchFactor, state.current.level);
                 this.helpers.move(state, distance);
                 this.helpers.savePoint(state, pointsMap);
