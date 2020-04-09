@@ -46,7 +46,7 @@ class LsPointsGenerator {
 
         for (let i = 0; i < STRING.length; i++) {
             let v = STRING.charAt(i);
-            if (v == 'F') {
+            if (v == 'F' || v == 'X') {
                 distance = this.helpers.getValueFromRange(LENGTH, israngeLength) * Math.pow(CONFIG.branchFactor, state.current.level);
                 this.helpers.move(state, distance);
                 this.helpers.savePoint(state, pointsMap);
